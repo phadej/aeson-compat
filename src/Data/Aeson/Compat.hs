@@ -1,5 +1,6 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 -----------------------------------------------------------------------------
 -- |
@@ -57,6 +58,7 @@ import qualified Data.Attoparsec.Lazy as L
 import           Control.Monad.Catch
 import           Data.Aeson.Types hiding ((.:?))
 import           Data.ByteString as B
+import qualified Data.Scientific as Scientific
 import           Data.ByteString.Lazy as L
 import qualified Data.HashMap.Strict as H
 import           Data.Text as T
@@ -66,6 +68,15 @@ import           Data.Typeable (Typeable)
 import           Data.Time (Day, LocalTime, formatTime)
 import           Data.Time.Locale.Compat (defaultTimeLocale)
 import qualified Data.Aeson.Compat.Time as CompatTime
+#endif
+
+#if !(MIN_VERSION_aeson(0,11,0) && MIN_VERSION_base(4,8,0))
+import Numeric.Natural (Natural)
+#endif
+
+#if !MIN_VERSION_aeson(0,11,0)
+import Data.Version (Version, showVersion, parseVersion)
+import Text.ParserCombinators.ReadP (readP_to_S)
 #endif
 
 -- | Exception thrown by 'decode' - family of functions in this module.
@@ -188,6 +199,10 @@ eitherDecodeStrictWith p to s =
 
 #endif
 
+-----------------------------------------------------------------------
+-- Instances in aeson-0.10
+-----------------------------------------------------------------------
+
 #if !MIN_VERSION_aeson(0,10,0)
 instance FromJSON Day where
   parseJSON = withText "Day" (CompatTime.run CompatTime.day)
@@ -200,5 +215,64 @@ instance ToJSON Day where
 
 instance ToJSON LocalTime where
   toJSON = toJSON . T.pack . formatTime defaultTimeLocale "%FT%T%Q"
+#endif
 
+-----------------------------------------------------------------------
+-- Instances in aeson-0.11
+-----------------------------------------------------------------------
+
+#if !(MIN_VERSION_aeson(0,11,0) && MIN_VERSION_base(4,8,0))
+instance ToJSON Natural where
+    toJSON = toJSON . toInteger
+    {-# INLINE toJSON #-}
+
+#if MIN_VERSION_aeson(0,10,0)
+    toEncoding = toEncoding . toInteger
+    {-# INLINE toEncoding #-}
+#endif
+
+instance FromJSON Natural where
+    parseJSON = withScientific "Natural" $ \s ->
+      if Scientific.coefficient s < 0
+        then fail $ "Expected a Natural number but got the negative number: " ++ show s
+        else pure $ truncate s
+#endif
+
+#if !MIN_VERSION_aeson(0,11,0)
+instance ToJSON Version where
+    toJSON = toJSON . showVersion
+    {-# INLINE toJSON #-}
+
+#if MIN_VERSION_aeson(0,10,0)
+    toEncoding = toEncoding . showVersion
+    {-# INLINE toEncoding #-}
+#endif
+
+instance FromJSON Version where
+    {-# INLINE parseJSON #-}
+    parseJSON = withText "Version" $ go . readP_to_S parseVersion . T.unpack
+      where
+        go [(v,[])] = return v
+        go (_ : xs) = go xs
+        go _        = fail $ "could not parse Version"
+
+instance ToJSON Ordering where
+  toJSON     = toJSON     . orderingToText
+#if MIN_VERSION_aeson(0,10,0)
+  toEncoding = toEncoding . orderingToText
+#endif
+
+orderingToText :: Ordering -> T.Text
+orderingToText o = case o of
+                     LT -> "LT"
+                     EQ -> "EQ"
+                     GT -> "GT"
+
+instance FromJSON Ordering where
+  parseJSON = withText "Ordering" $ \s ->
+    case s of
+      "LT" -> return LT
+      "EQ" -> return EQ
+      "GT" -> return GT
+      _ -> fail "Parsing Ordering value failed: expected \"LT\", \"EQ\", or \"GT\""
 #endif

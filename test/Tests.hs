@@ -3,6 +3,9 @@
 module Main (main) where
 
 import           Data.Time (Day, LocalTime)
+import           Data.Version (Version)
+import           Numeric.Natural (Natural)
+
 import           Test.QuickCheck.Instances ()
 import           Test.Tasty
 import           Test.Tasty.QuickCheck
@@ -15,8 +18,13 @@ import           Orphans ()
 main :: IO ()
 main = defaultMain $ testGroup "Tests"
   [ dotColonMark
-  , testProperty "roundtrip Day" $ roundtripBroken10 (undefined :: Day)
-  , testProperty "roundtrip LocalTime" $ roundtripBroken10 (undefined :: LocalTime)
+  , testGroup "Roundtrip"
+    [ testProperty "Day"       $ roundtripBroken10 (undefined :: Day)
+    , testProperty "LocalTime" $ roundtripBroken10 (undefined :: LocalTime)
+    , testProperty "Version"   $ roundtrip (undefined :: Version)
+    , testProperty "Ordering"  $ roundtrip (undefined :: Ordering)
+    , testProperty "Natural"   $ roundtrip (undefined :: Natural)
+    ]
   ]
 
 ------------------------------------------------------------------------------
