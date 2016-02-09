@@ -117,6 +117,7 @@ obj .:? key = case H.lookup key obj of
 #endif
 {-# INLINE (.:?) #-}
 
+#if !MIN_VERSION_aeson(0,11,0)
 -- | Like '.:?', but the resulting parser will fail,
 -- if the key is present but is 'Null'.
 (.:!) :: (FromJSON a) => Object -> Text -> Parser (Maybe a)
@@ -131,6 +132,7 @@ obj .:! key = case H.lookup key obj of
                   Just <$> parseJSON v
 #endif
 {-# INLINE (.:!) #-}
+#endif
 
 #if !MIN_VERSION_aeson(0,9,0)
 -- From Parser.Internal
