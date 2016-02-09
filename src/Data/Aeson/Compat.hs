@@ -63,7 +63,8 @@ import           Data.Text as T
 import           Data.Typeable (Typeable)
 
 #if !MIN_VERSION_aeson(0,10,0)
-import           Data.Time (Day, LocalTime)
+import           Data.Time (Day, LocalTime, formatTime)
+import           Data.Time.Locale.Compat (defaultTimeLocale)
 import qualified Data.Aeson.Compat.Time as CompatTime
 #endif
 
@@ -193,4 +194,11 @@ instance FromJSON Day where
 
 instance FromJSON LocalTime where
   parseJSON = withText "LocalTime" (CompatTime.run CompatTime.localTime)
+
+instance ToJSON Day where
+  toJSON = toJSON . T.pack . formatTime defaultTimeLocale "%F"
+
+instance ToJSON LocalTime where
+  toJSON = toJSON . T.pack . formatTime defaultTimeLocale "%FT%T%Q"
+
 #endif
