@@ -2,12 +2,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main (main) where
 
-#if !MIN_VERSION_base(4,8,0)
-import           Control.Applicative
-#endif
+import           Data.Time (Day, LocalTime)
+import           Data.Version (Version)
+import           Numeric.Natural (Natural)
 
 import           Test.QuickCheck.Instances ()
 import           Test.Tasty
+import           Test.Tasty.QuickCheck
 import           Test.Tasty.HUnit
 
 import           Data.Aeson.Compat
@@ -17,6 +18,13 @@ import           Orphans ()
 main :: IO ()
 main = defaultMain $ testGroup "Tests"
   [ dotColonMark
+  , testGroup "Roundtrip"
+    [ testProperty "Day"       $ roundtripBroken10 (undefined :: Day)
+    , testProperty "LocalTime" $ roundtripBroken10 (undefined :: LocalTime)
+    , testProperty "Version"   $ roundtrip (undefined :: Version)
+    , testProperty "Ordering"  $ roundtrip (undefined :: Ordering)
+    , testProperty "Natural"   $ roundtrip (undefined :: Natural)
+    ]
   ]
 
 ------------------------------------------------------------------------------
@@ -49,4 +57,15 @@ dotColonMark = testGroup "Operators" $ fmap t [
         ex2 = "{\"value\": 42 }"
         ex3 = "{\"value\": null }"
         t   = testCase "-"
-    
+
+roundtrip :: (Arbitrary a, Eq a, Show a, ToJSON a, FromJSON a) => a -> a -> Property
+roundtrip _ x = Right x === (eitherDecode . encode $ x)
+
+roundtripBroken10 :: (Arbitrary a, Eq a, Show a, ToJSON a, FromJSON a) => a -> a -> Property
+#if MIN_VERSION_aeson(0,10,0) && !MIN_VERSION_aeson(0,11,0)
+roundtripBroken10 _ x = property $ case eitherDecode . encode $ x of
+  Right y -> False && x == y  -- x and y of the same type!
+  Left _  -> True 
+#else
+roundtripBroken10 = roundtrip
+#endif

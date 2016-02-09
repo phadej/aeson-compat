@@ -3,7 +3,7 @@
 -- |
 -- Module:      Data.Aeson.Compat.Time (Data.Aeson.Parser.Time)
 -- Copyright:   (c) 2015 Bryan O'Sullivan
--- License:     Apache
+-- License:     BSD3
 -- Maintainer:  Bryan O'Sullivan <bos@serpentine.com>
 -- Stability:   experimental
 -- Portability: portable
@@ -39,7 +39,7 @@ import qualified Data.Time.LocalTime as Local
 import Control.Applicative ((<$>), (<*>), (<*), (*>))
 #endif
 
--- from Data.Aeson.Internal.Time
+--- from Data.Aeson.Internal.Time
 import Unsafe.Coerce (unsafeCoerce)
 
 toPico :: Integer -> Pico
@@ -67,12 +67,12 @@ twoDigits = do
   let c2d c = ord c .&. 15
   return $! c2d a * 10 + c2d b
 
--- | Parse a time of the form @HH:MM:SS[.SSS]@.
+-- | Parse a time of the form @HH:MM[:SS[.SSS]]@.
 timeOfDay :: Parser Local.TimeOfDay
 timeOfDay = do
-  h <- twoDigits <* char ':'
-  m <- twoDigits <* char ':'
-  s <- seconds
+  h <- twoDigits
+  m <- char ':' *> twoDigits
+  s <- option 0 (char ':' *> seconds)
   if h < 24 && m < 60 && s < 61
     then return (Local.TimeOfDay h m s)
     else fail "invalid time"
@@ -125,9 +125,9 @@ timeZone = do
               let !tz = Local.minutesToTimeZone off
               in return (Just tz)
 
--- | Parse a date and time, of the form @YYYY-MM-DD HH:MM:SS@.
--- The space may be replaced with a @T@.  The number of seconds may be
--- followed by a fractional component.
+-- | Parse a date and time, of the form @YYYY-MM-DD HH:MM[:SS[.SSS]]@.
+-- The space may be replaced with a @T@.  The number of seconds is optional
+-- and may be followed by a fractional component.
 localTime :: Parser Local.LocalTime
 localTime = Local.LocalTime <$> day <* daySep <*> timeOfDay
   where daySep = satisfy (\c -> c == 'T' || c == ' ')
@@ -145,7 +145,9 @@ utcTime = do
 
 -- | Parse a date with time zone info. Acceptable formats:
 --
+-- @YYYY-MM-DD HH:MM Z@
 -- @YYYY-MM-DD HH:MM:SS Z@
+-- @YYYY-MM-DD HH:MM:SS.SSS Z@
 --
 -- The first space may instead be a @T@, and the second space is
 -- optional.  The @Z@ represents UTC.  The @Z@ may be replaced with a
