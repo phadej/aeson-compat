@@ -49,4 +49,4 @@ dotColonMark = testGroup "Operators" $ fmap t [
         ex2 = "{\"value\": 42 }"
         ex3 = "{\"value\": null }"
         t   = testCase "-"
-    
+
