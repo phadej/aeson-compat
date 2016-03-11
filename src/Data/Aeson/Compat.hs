@@ -221,6 +221,7 @@ instance ToJSON LocalTime where
 -- Instances in aeson-0.11
 -----------------------------------------------------------------------
 
+#if !(MIN_VERSION_aeson(0,11,1))
 #if !(MIN_VERSION_aeson(0,11,0) && MIN_VERSION_base(4,8,0))
 instance ToJSON Natural where
     toJSON = toJSON . toInteger
@@ -236,6 +237,7 @@ instance FromJSON Natural where
       if Scientific.coefficient s < 0
         then fail $ "Expected a Natural number but got the negative number: " ++ show s
         else pure $ truncate s
+#endif
 #endif
 
 #if !MIN_VERSION_aeson(0,11,0)
