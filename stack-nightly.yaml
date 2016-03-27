@@ -1,7 +1,3 @@
-flags: {}
+resolver: nightly-2016-03-25
 packages:
 - '.'
-extra-deps:
-- fail-4.9.0.0
-- aeson-0.11.1.0
-resolver: nightly-2016-02-08
