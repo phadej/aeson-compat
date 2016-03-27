@@ -155,7 +155,7 @@ matrix:
         - ghc-7.10.2
         - libgmp-dev
     compiler: ! ': # ghc-7.10.2 cabal-1.22'
-  - env: GHCVER=7.10.2 CABALVER=1.22 STACKAGESNAPSHOT=lts-3.6
+  - env: GHCVER=7.10.2 CABALVER=1.22 STACKAGESNAPSHOT=lts-3.22
     addons:
       apt:
         sources:
@@ -164,7 +164,7 @@ matrix:
         - cabal-install-1.22
         - ghc-7.10.2
         - libgmp-dev
-    compiler: ! ': # ghc-7.10.2 cabal-1.22 lts-3.6'
+    compiler: ! ': # ghc-7.10.2 cabal-1.22 lts-3.22'
   - env: GHCVER=7.10.3 CABALVER=1.22
     addons:
       apt:
@@ -195,16 +195,6 @@ matrix:
         - ghc-7.10.3
         - libgmp-dev
     compiler: ! ': # ghc-7.10.3 cabal-1.22 lts-5.9'
-  - env: GHCVER=7.10.3 CABALVER=1.22 CABALCONFIG=time-1.6.cabal.config NOTESTS=YES
-    addons:
-      apt:
-        sources:
-        - hvr-ghc
-        packages:
-        - cabal-install-1.22
-        - ghc-7.10.3
-        - libgmp-dev
-    compiler: ! ': # ghc-7.10.3 cabal-1.22  time-1.6.cabal.config'
   - env: GHCVER=7.10.3 CABALVER=1.22 CABALCONFIG=travis/aeson-0.9.0.1.cabal.config
     addons:
       apt:

@@ -1,3 +1,8 @@
+# 0.3.2.0
+
+- Introduce instances from `aeson-0.11.1.0`: `Const`, `Tagged`, `Proxy` and `NonEmpty`
+- Fix bug with `Natural` instance, `aeson-0.11.1.0` and `base <=4.7`
+
 # 0.3.1.0
 
 - `aeson-0.11` support

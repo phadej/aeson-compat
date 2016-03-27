@@ -1,19 +1,28 @@
-{-# LANGUAGE CPP #-}
+{-# LANGUAGE CPP               #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Main (main) where
 
-import           Data.Time (Day, LocalTime)
-import           Data.Version (Version)
-import           Numeric.Natural (Natural)
+import Prelude                   ()
+import Prelude.Compat
 
-import           Test.QuickCheck.Instances ()
-import           Test.Tasty
-import           Test.Tasty.QuickCheck
-import           Test.Tasty.HUnit
+import Control.Applicative       (Const)
+import Data.List.NonEmpty        (NonEmpty)
+import Data.Proxy                (Proxy)
+import Data.Tagged               (Tagged)
+import Data.Time                 (Day, LocalTime)
+import Data.Version              (Version)
+import Numeric.Natural           (Natural)
 
-import           Data.Aeson.Compat
+import Data.Orphans              ()
 
-import           Orphans ()
+import Test.QuickCheck.Instances ()
+import Test.Tasty
+import Test.Tasty.HUnit
+import Test.Tasty.QuickCheck
+
+import Data.Aeson.Compat
+
+import Orphans                   ()
 
 main :: IO ()
 main = defaultMain $ testGroup "Tests"
@@ -24,6 +33,10 @@ main = defaultMain $ testGroup "Tests"
     , testProperty "Version"   $ roundtrip (undefined :: Version)
     , testProperty "Ordering"  $ roundtrip (undefined :: Ordering)
     , testProperty "Natural"   $ roundtrip (undefined :: Natural)
+    , testProperty "Const"     $ roundtrip (undefined :: Const Int Int)
+    , testProperty "Proxy"     $ roundtrip (undefined :: Proxy Int)
+    , testProperty "Tagged"    $ roundtrip (undefined :: Tagged Int Int)
+    , testProperty "NonEmpty"  $ roundtrip (undefined :: NonEmpty Int)
     ]
   ]
 
@@ -65,7 +78,7 @@ roundtripBroken10 :: (Arbitrary a, Eq a, Show a, ToJSON a, FromJSON a) => a -> a
 #if MIN_VERSION_aeson(0,10,0) && !MIN_VERSION_aeson(0,11,0)
 roundtripBroken10 _ x = property $ case eitherDecode . encode $ x of
   Right y -> False && x == y  -- x and y of the same type!
-  Left _  -> True 
+  Left _  -> True
 #else
 roundtripBroken10 = roundtrip
 #endif

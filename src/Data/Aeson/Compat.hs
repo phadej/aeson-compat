@@ -33,13 +33,8 @@ module Data.Aeson.Compat (
   module Data.Aeson,
   ) where
 
-#if !MIN_VERSION_base(4,8,0)
-import           Control.Applicative
-#endif
-
-#if MIN_VERSION_aeson(0,10,0)
-import           Data.Monoid
-#endif
+import Prelude ()
+import Prelude.Compat
 
 import           Data.Aeson hiding
   ((.:?), decode, decode', decodeStrict, decodeStrict'
@@ -77,6 +72,16 @@ import Numeric.Natural (Natural)
 #if !MIN_VERSION_aeson(0,11,0)
 import Data.Version (Version, showVersion, parseVersion)
 import Text.ParserCombinators.ReadP (readP_to_S)
+#endif
+
+#if !MIN_VERSION_aeson(0,11,1)
+import Control.Applicative (Const (..))
+import Data.List.NonEmpty  (NonEmpty (..))
+import Data.Proxy          (Proxy (..))
+import Data.Tagged         (Tagged (..))
+
+import qualified Data.List.NonEmpty as NonEmpty
+import qualified Data.Vector        as V
 #endif
 
 -- | Exception thrown by 'decode' - family of functions in this module.
@@ -123,7 +128,7 @@ obj .:? key = case H.lookup key obj of
 #if MIN_VERSION_aeson(0,10,0)
                   modifyFailure addKeyName $ parseJSON v -- <?> Key key
   where
-    addKeyName = (("failed to parse field " <> T.unpack key <> ": ") <>)
+    addKeyName = mappend $ mconcat ["failed to parse field ", T.unpack key, ": "]
 #else
                   parseJSON v
 #endif
@@ -139,7 +144,7 @@ obj .:! key = case H.lookup key obj of
 #if MIN_VERSION_aeson(0,10,0)
                   modifyFailure addKeyName $ Just <$> parseJSON v -- <?> Key key
   where
-    addKeyName = (("failed to parse field " <> T.unpack key <> ": ") <>)
+    addKeyName = mappend $ mconcat ["failed to parse field ", T.unpack key, ": "]
 #else
                   Just <$> parseJSON v
 #endif
@@ -277,4 +282,59 @@ instance FromJSON Ordering where
       "EQ" -> return EQ
       "GT" -> return GT
       _ -> fail "Parsing Ordering value failed: expected \"LT\", \"EQ\", or \"GT\""
+#endif
+
+#if !MIN_VERSION_aeson(0,11,1)
+instance ToJSON (Proxy a) where
+    toJSON _ = Null
+    {-# INLINE toJSON #-}
+
+    -- No 'toEncoding', default is good enough
+
+instance FromJSON (Proxy a) where
+    {-# INLINE parseJSON #-}
+    parseJSON Null = pure Proxy
+    parseJSON v    = typeMismatch "Proxy" v
+
+instance ToJSON b => ToJSON (Tagged a b) where
+    toJSON (Tagged x) = toJSON x
+    {-# INLINE toJSON #-}
+
+#if MIN_VERSION_aeson(0,10,0)
+    toEncoding (Tagged x) = toEncoding x
+    {-# INLINE toEncoding #-}
+#endif
+
+instance FromJSON b => FromJSON (Tagged a b) where
+    {-# INLINE parseJSON #-}
+    parseJSON = fmap Tagged . parseJSON
+
+instance ToJSON a => ToJSON (Const a b) where
+    toJSON (Const x) = toJSON x
+    {-# INLINE toJSON #-}
+
+#if MIN_VERSION_aeson(0,10,0)
+    toEncoding (Const x) = toEncoding x
+    {-# INLINE toEncoding #-}
+#endif
+
+instance FromJSON a => FromJSON (Const a b) where
+    {-# INLINE parseJSON #-}
+    parseJSON = fmap Const . parseJSON
+
+instance (ToJSON a) => ToJSON (NonEmpty a) where
+    toJSON = toJSON . NonEmpty.toList
+    {-# INLINE toJSON #-}
+
+#if MIN_VERSION_aeson(0,10,0)
+    toEncoding = toEncoding . NonEmpty.toList
+    {-# INLINE toEncoding #-}
+#endif
+
+instance (FromJSON a) => FromJSON (NonEmpty a) where
+    parseJSON = withArray "NonEmpty a" $
+        (>>= ne) . traverse parseJSON . V.toList
+      where
+        ne []     = fail "Expected a NonEmpty but got an empty list"
+        ne (x:xs) = pure (x :| xs)
 #endif

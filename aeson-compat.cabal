@@ -1,9 +1,9 @@
--- This file has been generated from package.yaml by hpack version 0.8.0.
+-- This file has been generated from package.yaml by hpack version 0.11.2.
 --
 -- see: https://github.com/sol/hpack
 
 name:           aeson-compat
-version:        0.3.1.0
+version:        0.3.2.0
 synopsis:       Compatibility layer for aeson
 description:    Compatibility layer for @aeson@
 category:       Web
@@ -31,6 +31,7 @@ library
   ghc-options: -Wall
   build-depends:
       base                     >=4.6  && <4.10
+    , base-compat              >=0.6.0 && <0.10
     , aeson                    >=0.7.0.6 && <0.11.2
     , attoparsec               >=0.12 && <0.14
     , bytestring               >=0.10 && <0.11
@@ -44,6 +45,8 @@ library
     , time-locale-compat       >=0.1.0.1 && <0.2
     , unordered-containers     >=0.2  && <0.3
     , vector                   >=0.10 && <0.12
+    , semigroups               >=0.16.2.2 && <0.19
+    , tagged                   >=0.7.3 && <0.9
   exposed-modules:
       Data.Aeson.Compat
   other-modules:
@@ -58,6 +61,7 @@ test-suite aeson-compat-test
   ghc-options: -Wall
   build-depends:
       base                     >=4.6  && <4.10
+    , base-compat              >=0.6.0 && <0.10
     , aeson                    >=0.7.0.6 && <0.11.2
     , attoparsec               >=0.12 && <0.14
     , bytestring               >=0.10 && <0.11
@@ -71,7 +75,10 @@ test-suite aeson-compat-test
     , time-locale-compat       >=0.1.0.1 && <0.2
     , unordered-containers     >=0.2  && <0.3
     , vector                   >=0.10 && <0.12
+    , semigroups               >=0.16.2.2 && <0.19
+    , tagged                   >=0.7.3 && <0.9
     , aeson-compat
+    , base-orphans          >=0.4.5 && <0.6
     , tasty                 >=0.10 && <0.12
     , tasty-hunit           >=0.9  && <0.10
     , tasty-quickcheck      >=0.8  && <0.9
