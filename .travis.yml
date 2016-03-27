@@ -10,8 +10,10 @@ before_install:
 - cabal --version
 - ghc --version
 - if [ "$NOTESTS" = "YES" ]; then export CABALCONFOPTS="$CABALFLAGS"; export CABALTEST="true";
-  else export CABALCONFOPTS="$CABALFLAGS --enable-tests --enable-benchmarks"; export
-  CABALTEST="cabal test"; fi
+  else export CABALCONFOPTS="$CABALFLAGS --enable-tests"; export CABALTEST="cabal
+  test"; fi
+- if [ ! "$NOBENCHMARKS" = "YES"]; then export CABALCONFOPTS="$CABALCONFOPTS --enable-benchmarks";
+  fi
 - if [ "$PEDANTIC" = "YES" ]; then export CABALBUILDOPTS="--ghc-options=-Werror --ghc-options=-Wall";
   fi
 install:
@@ -53,7 +55,7 @@ matrix:
         - ghc-7.6.3
         - libgmp-dev
     compiler: ! ': # ghc-7.6.3 cabal-1.18'
-  - env: GHCVER=7.6.3 CABALVER=1.18 CABALCONFIG=aeson-0.7.0.6.cabal.config
+  - env: GHCVER=7.6.3 CABALVER=1.18 CABALCONFIG=travis/aeson-0.7.0.6.cabal.config
     addons:
       apt:
         sources:
@@ -62,7 +64,7 @@ matrix:
         - cabal-install-1.18
         - ghc-7.6.3
         - libgmp-dev
-    compiler: ! ': # ghc-7.6.3 cabal-1.18  aeson-0.7.0.6.cabal.config'
+    compiler: ! ': # ghc-7.6.3 cabal-1.18  travis/aeson-0.7.0.6.cabal.config'
   - env: GHCVER=7.8.4 CABALVER=1.18
     addons:
       apt:
@@ -73,7 +75,7 @@ matrix:
         - ghc-7.8.4
         - libgmp-dev
     compiler: ! ': # ghc-7.8.4 cabal-1.18'
-  - env: GHCVER=7.8.4 CABALVER=1.18 CABALCONFIG=aeson-0.7.0.6.cabal.config
+  - env: GHCVER=7.8.4 CABALVER=1.18 CABALCONFIG=travis/aeson-0.7.0.6.cabal.config
     addons:
       apt:
         sources:
@@ -82,7 +84,57 @@ matrix:
         - cabal-install-1.18
         - ghc-7.8.4
         - libgmp-dev
-    compiler: ! ': # ghc-7.8.4 cabal-1.18  aeson-0.7.0.6.cabal.config'
+    compiler: ! ': # ghc-7.8.4 cabal-1.18  travis/aeson-0.7.0.6.cabal.config'
+  - env: GHCVER=7.8.4 CABALVER=1.18 CABALCONFIG=travis/aeson-0.8.1.1.cabal.config
+    addons:
+      apt:
+        sources:
+        - hvr-ghc
+        packages:
+        - cabal-install-1.18
+        - ghc-7.8.4
+        - libgmp-dev
+    compiler: ! ': # ghc-7.8.4 cabal-1.18  travis/aeson-0.8.1.1.cabal.config'
+  - env: GHCVER=7.8.4 CABALVER=1.18 CABALCONFIG=travis/aeson-0.9.0.1.cabal.config
+    addons:
+      apt:
+        sources:
+        - hvr-ghc
+        packages:
+        - cabal-install-1.18
+        - ghc-7.8.4
+        - libgmp-dev
+    compiler: ! ': # ghc-7.8.4 cabal-1.18  travis/aeson-0.9.0.1.cabal.config'
+  - env: GHCVER=7.8.4 CABALVER=1.18 CABALCONFIG=travis/aeson-0.10.0.0.cabal.config
+    addons:
+      apt:
+        sources:
+        - hvr-ghc
+        packages:
+        - cabal-install-1.18
+        - ghc-7.8.4
+        - libgmp-dev
+    compiler: ! ': # ghc-7.8.4 cabal-1.18  travis/aeson-0.10.0.0.cabal.config'
+  - env: GHCVER=7.8.4 CABALVER=1.18 CABALCONFIG=travis/aeson-0.11.0.0.cabal.config
+    addons:
+      apt:
+        sources:
+        - hvr-ghc
+        packages:
+        - cabal-install-1.18
+        - ghc-7.8.4
+        - libgmp-dev
+    compiler: ! ': # ghc-7.8.4 cabal-1.18  travis/aeson-0.11.0.0.cabal.config'
+  - env: GHCVER=7.8.4 CABALVER=1.18 CABALCONFIG=travis/aeson-0.11.1.0.cabal.config
+    addons:
+      apt:
+        sources:
+        - hvr-ghc
+        packages:
+        - cabal-install-1.18
+        - ghc-7.8.4
+        - libgmp-dev
+    compiler: ! ': # ghc-7.8.4 cabal-1.18  travis/aeson-0.11.1.0.cabal.config'
   - env: GHCVER=7.8.4 CABALVER=1.18 STACKAGESNAPSHOT=lts-2.22
     addons:
       apt:
@@ -133,7 +185,7 @@ matrix:
         - ghc-7.10.3
         - libgmp-dev
     compiler: ! ': # ghc-7.10.3 cabal-1.22 lts-4.2'
-  - env: GHCVER=7.10.3 CABALVER=1.22 STACKAGESNAPSHOT=lts-5.2
+  - env: GHCVER=7.10.3 CABALVER=1.22 STACKAGESNAPSHOT=lts-5.9
     addons:
       apt:
         sources:
@@ -142,7 +194,7 @@ matrix:
         - cabal-install-1.22
         - ghc-7.10.3
         - libgmp-dev
-    compiler: ! ': # ghc-7.10.3 cabal-1.22 lts-5.2'
+    compiler: ! ': # ghc-7.10.3 cabal-1.22 lts-5.9'
   - env: GHCVER=7.10.3 CABALVER=1.22 CABALCONFIG=time-1.6.cabal.config NOTESTS=YES
     addons:
       apt:
@@ -153,6 +205,46 @@ matrix:
         - ghc-7.10.3
         - libgmp-dev
     compiler: ! ': # ghc-7.10.3 cabal-1.22  time-1.6.cabal.config'
+  - env: GHCVER=7.10.3 CABALVER=1.22 CABALCONFIG=travis/aeson-0.9.0.1.cabal.config
+    addons:
+      apt:
+        sources:
+        - hvr-ghc
+        packages:
+        - cabal-install-1.22
+        - ghc-7.10.3
+        - libgmp-dev
+    compiler: ! ': # ghc-7.10.3 cabal-1.22  travis/aeson-0.9.0.1.cabal.config'
+  - env: GHCVER=7.10.3 CABALVER=1.22 CABALCONFIG=travis/aeson-0.10.0.0.cabal.config
+    addons:
+      apt:
+        sources:
+        - hvr-ghc
+        packages:
+        - cabal-install-1.22
+        - ghc-7.10.3
+        - libgmp-dev
+    compiler: ! ': # ghc-7.10.3 cabal-1.22  travis/aeson-0.10.0.0.cabal.config'
+  - env: GHCVER=7.10.3 CABALVER=1.22 CABALCONFIG=travis/aeson-0.11.0.0.cabal.config
+    addons:
+      apt:
+        sources:
+        - hvr-ghc
+        packages:
+        - cabal-install-1.22
+        - ghc-7.10.3
+        - libgmp-dev
+    compiler: ! ': # ghc-7.10.3 cabal-1.22  travis/aeson-0.11.0.0.cabal.config'
+  - env: GHCVER=7.10.3 CABALVER=1.22 CABALCONFIG=travis/aeson-0.11.1.0.cabal.config
+    addons:
+      apt:
+        sources:
+        - hvr-ghc
+        packages:
+        - cabal-install-1.22
+        - ghc-7.10.3
+        - libgmp-dev
+    compiler: ! ': # ghc-7.10.3 cabal-1.22  travis/aeson-0.11.1.0.cabal.config'
   - env: GHCVER=8.0.1 CABALVER=1.24
     addons:
       apt:
