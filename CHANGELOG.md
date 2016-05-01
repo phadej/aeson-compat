@@ -1,3 +1,7 @@
+# 0.3.3.0
+
+- Enable `PolyKinds` to generalize `Proxy`, `Tagged`, and `Const` instances.
+
 # 0.3.2.0
 
 - Introduce instances from `aeson-0.11.1.0`: `Const`, `Tagged`, `Proxy` and `NonEmpty`
