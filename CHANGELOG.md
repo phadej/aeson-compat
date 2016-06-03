@@ -1,3 +1,7 @@
+# 0.3.4.0
+
+- Add `NominalDiffTime` instances
+
 # 0.3.3.0
 
 - Enable `PolyKinds` to generalize `Proxy`, `Tagged`, and `Const` instances.
