@@ -61,7 +61,7 @@ import           Data.Text as T
 import           Data.Typeable (Typeable)
 
 #if !MIN_VERSION_aeson(0,10,0)
-import           Data.Time (Day, LocalTime, formatTime)
+import           Data.Time (Day, LocalTime, formatTime, NominalDiffTime)
 import           Data.Time.Locale.Compat (defaultTimeLocale)
 import qualified Data.Aeson.Compat.Time as CompatTime
 #endif
@@ -221,6 +221,23 @@ instance ToJSON Day where
 
 instance ToJSON LocalTime where
   toJSON = toJSON . T.pack . formatTime defaultTimeLocale "%FT%T%Q"
+
+instance ToJSON NominalDiffTime where
+  toJSON = Number . realToFrac
+  {-# INLINE toJSON #-}
+	
+#if MIN_VERSION_aeson(0,10,0)
+  toEncoding = Encoding . E.number . realToFrac
+  {-# INLINE toEncoding #-}
+#endif
+	
+-- | /WARNING:/ Only parse lengths of time from trusted input
+-- since an attacker could easily fill up the memory of the target
+-- system by specifying a scientific number with a big exponent like
+-- @1e1000000000@.
+instance FromJSON NominalDiffTime where
+  parseJSON = withScientific "NominalDiffTime" $ pure . realToFrac
+  {-# INLINE parseJSON #-}
 #endif
 
 -----------------------------------------------------------------------

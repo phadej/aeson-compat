@@ -9,7 +9,7 @@ import Control.Applicative       (Const)
 import Data.List.NonEmpty        (NonEmpty)
 import Data.Proxy                (Proxy)
 import Data.Tagged               (Tagged)
-import Data.Time                 (Day, LocalTime)
+import Data.Time                 (Day, LocalTime, NominalDiffTime)
 import Data.Version              (Version)
 import Numeric.Natural           (Natural)
 
@@ -37,6 +37,7 @@ main = defaultMain $ testGroup "Tests"
     , testProperty "Proxy"     $ roundtrip (undefined :: Proxy Int)
     , testProperty "Tagged"    $ roundtrip (undefined :: Tagged Int Int)
     , testProperty "NonEmpty"  $ roundtrip (undefined :: NonEmpty Int)
+    , testProperty "NominalDiffTime" $ roundtrip (undefined :: NominalDiffTime)
     ]
   ]
 
