@@ -17,21 +17,77 @@
 --   * '.:?' works as in @aeson <0.10@
 --   * '.:!' works as '.:?' in @aeson ==0.10@
 --   * Orphan instances 'FromJSON' 'Day' and 'FromJSON' 'LocalTime' for @aeson <0.10@
+--   * 'Encoding' related functionality is not added. It's present only with @aeson >=0.10@
 --
 module Data.Aeson.Compat (
-  -- * Generic decoding functions
-  decode,
-  decode',
-  decodeStrict,
-  decodeStrict',
-  AesonException(..),
-  -- * Either decoding functions
-  eitherDecode, eitherDecode', eitherDecodeStrict, eitherDecodeStrict',
-  -- * Operators
-  (.:?), (.:!),
-  -- * Re-exports
-  -- | Original 'Data.Aeson..:?' operator is not re-exported
-  module Data.Aeson,
+    -- * Encoding and decoding
+    -- ** Direct encoding
+    decode,
+    decode',
+    eitherDecode,
+    eitherDecode',
+    encode,
+    -- ** Variants for strict bytestrings
+    decodeStrict,
+    decodeStrict',
+    eitherDecodeStrict,
+    eitherDecodeStrict',
+    -- * Core JSON types
+    Value(..),
+#if MIN_VERSION_aeson(0,10,0)
+    Encoding,
+    fromEncoding,
+#endif
+    Array,
+    Object,
+    -- * Convenience types
+    DotNetTime(..),
+    -- * Type conversion
+    FromJSON(..),
+    Result(..),
+    fromJSON,
+    ToJSON(..),
+#if MIN_VERSION_aeson(0,10,0)
+    KeyValue(..),
+#endif
+    -- ** Generic JSON classes and options
+    GFromJSON(..),
+    GToJSON(..),
+#if MIN_VERSION_aeson(0,11,0)
+    -- GToEncoding is introduced in 0.11.0.0
+    GToEncoding(..),
+#endif
+    genericToJSON,
+#if MIN_VERSION_aeson(0,10,0)
+    genericToEncoding,
+#endif
+    genericParseJSON,
+    defaultOptions,
+
+    -- * Inspecting @'Value's@
+    withObject,
+    withText,
+    withArray,
+    withNumber,
+    withScientific,
+    withBool,
+    -- * Constructors and accessors
+#if MIN_VERSION_aeson(0,10,0)
+    Series,
+    pairs,
+    foldable,
+#endif
+    (.:),
+    (.:?),
+    (.:!),
+    (.!=),
+    object,
+    -- * Parsing
+    json,
+    json',
+    value,
+    value',
+    Parser,
   ) where
 
 import Prelude ()
@@ -44,8 +100,9 @@ import           Data.Aeson hiding
 #endif
   )
 
-#if !MIN_VERSION_aeson (0,9,0)
 import           Data.Aeson.Parser (value, value')
+
+#if !MIN_VERSION_aeson (0,9,0)
 import qualified Data.Attoparsec.ByteString as A
 import qualified Data.Attoparsec.ByteString.Char8 as A (skipSpace)
 import qualified Data.Attoparsec.Lazy as L
