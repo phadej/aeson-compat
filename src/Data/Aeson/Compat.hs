@@ -108,7 +108,7 @@ import qualified Data.Attoparsec.ByteString.Char8 as A (skipSpace)
 import qualified Data.Attoparsec.Lazy as L
 #endif
 
-import           Control.Monad.Catch
+import           Control.Monad.Catch (MonadThrow (..), Exception)
 import           Data.Aeson.Types hiding ((.:?))
 import           Data.ByteString as B
 import qualified Data.Scientific as Scientific
