@@ -1,3 +1,8 @@
+# 0.3.5.0
+
+- Use explicit export list. Now we are sure we don't break interface.
+- `value`, `value'` and `Parser` are exported from `Data.Aeson.Compat`
+
 # 0.3.4.0
 
 - Add `NominalDiffTime` instances
