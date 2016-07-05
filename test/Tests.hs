@@ -1,6 +1,6 @@
 {-# LANGUAGE CPP               #-}
 {-# LANGUAGE OverloadedStrings #-}
-module Main (main) where
+module Main (main, ex) where
 
 import Prelude                   ()
 import Prelude.Compat
@@ -9,6 +9,7 @@ import Control.Applicative       (Const)
 import Data.List.NonEmpty        (NonEmpty)
 import Data.Proxy                (Proxy)
 import Data.Tagged               (Tagged)
+import Data.Text                 (Text)
 import Data.Time                 (Day, LocalTime, NominalDiffTime)
 import Data.Version              (Version)
 import Numeric.Natural           (Natural)
@@ -83,3 +84,10 @@ roundtripBroken10 _ x = property $ case eitherDecode . encode $ x of
 #else
 roundtripBroken10 = roundtrip
 #endif
+
+-------------------------------------------------------------------------------
+-- tests that symbols are exported
+-------------------------------------------------------------------------------
+
+ex :: (Text, Value)
+ex = "foo" .= True

@@ -1,3 +1,7 @@
+# 0.3.5.1.
+
+- Fix `(.=)` export regression introduced by 0.3.5.0
+
 # 0.3.5.0
 
 - Use explicit export list. Now we are sure we don't break interface.
