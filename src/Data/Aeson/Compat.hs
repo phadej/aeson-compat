@@ -49,6 +49,8 @@ module Data.Aeson.Compat (
     ToJSON(..),
 #if MIN_VERSION_aeson(0,10,0)
     KeyValue(..),
+#else
+    (.=),
 #endif
     -- ** Generic JSON classes and options
     GFromJSON(..),
