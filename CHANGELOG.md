@@ -1,8 +1,8 @@
-# 0.3.5.1
+# 0.3.5.2
 
 - Support QuickCheck-2.9.1
 
-# 0.3.5.1.
+# 0.3.5.1
 
 - Fix `(.=)` export regression introduced by 0.3.5.0
 
