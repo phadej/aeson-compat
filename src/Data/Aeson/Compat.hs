@@ -24,6 +24,7 @@ module Data.Aeson.Compat (
     -- ** Direct encoding
     decode,
     decode',
+    AesonException(..),
     eitherDecode,
     eitherDecode',
     encode,

@@ -1,3 +1,7 @@
+# 0.3.6
+
+- Fix accidental removal of `AesonException` export
+
 # 0.3.5.2
 
 - Support QuickCheck-2.9.1
