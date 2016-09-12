@@ -35,13 +35,9 @@ env:
   - GHCVER=7.10.3 CABALVER=1.22 CABALCONFIG=travis/aeson-1.cabal.config
   # 8.0.1
   - GHCVER=8.0.1 CABALVER=1.24
-  # HEAD
-  - GHCVER=head CABALVER=1.24
 
 matrix:
   fast_finish: true
-  allow_failures:
-    - env: GHCVER=head CABALVER=1.22
 
 branches:
   only:
