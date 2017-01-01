@@ -14,8 +14,8 @@
 --
 --   * 'decode' etc. work as in @aeson >=0.9@
 --   * but it is generalised to work in any 'MonadThrow' (that is extra)
---   * '.:?' works as in @aeson <0.10@
---   * '.:!' works as '.:?' in @aeson ==0.10@
+--   * '.:?' works as in @aeson <0.10 || >=0.11@
+--   * '.:!' works as in @aeson <0.10 || >=0.11@ and as '.:?' did in @aeson ==0.10.*@
 --   * Orphan instances 'FromJSON' 'Day' and 'FromJSON' 'LocalTime' for @aeson <0.10@
 --   * 'Encoding' related functionality is not added. It's present only with @aeson >=0.10@
 --
@@ -285,12 +285,12 @@ instance ToJSON LocalTime where
 instance ToJSON NominalDiffTime where
   toJSON = Number . realToFrac
   {-# INLINE toJSON #-}
-	
+
 #if MIN_VERSION_aeson(0,10,0)
   toEncoding = Encoding . E.number . realToFrac
   {-# INLINE toEncoding #-}
 #endif
-	
+
 -- | /WARNING:/ Only parse lengths of time from trusted input
 -- since an attacker could easily fill up the memory of the target
 -- system by specifying a scientific number with a big exponent like
