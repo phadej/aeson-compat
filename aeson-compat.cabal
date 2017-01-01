@@ -1,9 +1,6 @@
--- This file has been generated from package.yaml by hpack version 0.15.0.
---
--- see: https://github.com/sol/hpack
-
 name:           aeson-compat
 version:        0.3.6
+x-revision:     2
 synopsis:       Compatibility layer for aeson
 description:    Compatibility layer for @aeson@
 category:       Web
