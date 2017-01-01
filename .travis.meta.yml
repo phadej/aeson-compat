@@ -14,6 +14,7 @@ env:
   - GHCVER=7.8.4 CABALVER=1.18 CABALCONFIG=travis/aeson-0.11.1.0.cabal.config
   - GHCVER=7.8.4 CABALVER=1.18 CABALCONFIG=travis/aeson-0.11.2.0.cabal.config
   - GHCVER=7.8.4 CABALVER=1.18 CABALCONFIG=travis/aeson-1.cabal.config
+  - GHCVER=7.8.4 CABALVER=1.18 CABALCONFIG=travis/aeson-1.1.cabal.config
   - GHCVER=7.8.4 CABALVER=1.18 STACKAGESNAPSHOT=lts-2.0
   - GHCVER=7.8.4 CABALVER=1.18 STACKAGESNAPSHOT=lts-2.22
   # 7.10.2
@@ -33,8 +34,10 @@ env:
   - GHCVER=7.10.3 CABALVER=1.22 CABALCONFIG=travis/aeson-0.11.1.0.cabal.config
   - GHCVER=7.10.3 CABALVER=1.22 CABALCONFIG=travis/aeson-0.11.2.0.cabal.config
   - GHCVER=7.10.3 CABALVER=1.22 CABALCONFIG=travis/aeson-1.cabal.config
+  - GHCVER=7.10.3 CABALVER=1.22 CABALCONFIG=travis/aeson-1.2.cabal.config
   # 8.0.1
   - GHCVER=8.0.1 CABALVER=1.24
+  - GHCVER=8.0.1 CABALVER=1.24 STACKAGESNAPSHOT=lts-7.0
 
 matrix:
   fast_finish: true
