@@ -154,6 +154,16 @@ matrix:
         - ghc-7.8.4
         - libgmp-dev
     compiler: ! ': # ghc-7.8.4 cabal-1.18  travis/aeson-1.cabal.config'
+  - env: GHCVER=7.8.4 CABALVER=1.18 CABALCONFIG=travis/aeson-1.1.cabal.config
+    addons:
+      apt:
+        sources:
+        - hvr-ghc
+        packages:
+        - cabal-install-1.18
+        - ghc-7.8.4
+        - libgmp-dev
+    compiler: ! ': # ghc-7.8.4 cabal-1.18  travis/aeson-1.1.cabal.config'
   - env: GHCVER=7.8.4 CABALVER=1.18 STACKAGESNAPSHOT=lts-2.0
     addons:
       apt:
@@ -314,6 +324,16 @@ matrix:
         - ghc-7.10.3
         - libgmp-dev
     compiler: ! ': # ghc-7.10.3 cabal-1.22  travis/aeson-1.cabal.config'
+  - env: GHCVER=7.10.3 CABALVER=1.22 CABALCONFIG=travis/aeson-1.2.cabal.config
+    addons:
+      apt:
+        sources:
+        - hvr-ghc
+        packages:
+        - cabal-install-1.22
+        - ghc-7.10.3
+        - libgmp-dev
+    compiler: ! ': # ghc-7.10.3 cabal-1.22  travis/aeson-1.2.cabal.config'
   - env: GHCVER=8.0.1 CABALVER=1.24
     addons:
       apt:
@@ -324,6 +344,16 @@ matrix:
         - ghc-8.0.1
         - libgmp-dev
     compiler: ! ': # ghc-8.0.1 cabal-1.24'
+  - env: GHCVER=8.0.1 CABALVER=1.24 STACKAGESNAPSHOT=lts-7.0
+    addons:
+      apt:
+        sources:
+        - hvr-ghc
+        packages:
+        - cabal-install-1.24
+        - ghc-8.0.1
+        - libgmp-dev
+    compiler: ! ': # ghc-8.0.1 cabal-1.24 lts-7.0'
 branches:
   only:
   - master
