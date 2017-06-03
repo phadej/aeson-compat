@@ -54,11 +54,11 @@ module Data.Aeson.Compat (
     (.=),
 #endif
     -- ** Generic JSON classes and options
-    GFromJSON(..),
-    GToJSON(..),
+    GFromJSON,
+    GToJSON,
 #if MIN_VERSION_aeson(0,11,0)
     -- GToEncoding is introduced in 0.11.0.0
-    GToEncoding(..),
+    GToEncoding,
 #endif
     genericToJSON,
 #if MIN_VERSION_aeson(0,10,0)
@@ -123,7 +123,8 @@ import           Data.Typeable (Typeable)
 #if !MIN_VERSION_aeson(0,10,0)
 import           Data.Time (Day, LocalTime, formatTime, NominalDiffTime)
 import           Data.Time.Locale.Compat (defaultTimeLocale)
-import qualified Data.Aeson.Compat.Time as CompatTime
+import qualified Data.Attoparsec.Text as Atto
+import qualified Data.Attoparsec.Time as CompatTime
 #endif
 
 #if !(MIN_VERSION_aeson(0,11,0) && MIN_VERSION_base(4,8,0))
@@ -270,11 +271,16 @@ eitherDecodeStrictWith p to s =
 -----------------------------------------------------------------------
 
 #if !MIN_VERSION_aeson(0,10,0)
+attoRun :: Atto.Parser a -> Text -> Parser a
+attoRun p t = case Atto.parseOnly (p <* Atto.endOfInput) t of
+    Left err -> fail $ "could not parse date: " ++ err
+    Right r  -> return r
+
 instance FromJSON Day where
-  parseJSON = withText "Day" (CompatTime.run CompatTime.day)
+  parseJSON = withText "Day" (attoRun CompatTime.day)
 
 instance FromJSON LocalTime where
-  parseJSON = withText "LocalTime" (CompatTime.run CompatTime.localTime)
+  parseJSON = withText "LocalTime" (attoRun CompatTime.localTime)
 
 instance ToJSON Day where
   toJSON = toJSON . T.pack . formatTime defaultTimeLocale "%F"
