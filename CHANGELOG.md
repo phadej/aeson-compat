@@ -1,3 +1,8 @@
+# 0.3.7
+
+- Use `attoparsec-iso8601` time parsers.
+- Don't export `GToJSON` etc. members.
+
 # 0.3.6
 
 - Fix accidental removal of `AesonException` export

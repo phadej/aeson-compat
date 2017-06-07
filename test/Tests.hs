@@ -7,7 +7,7 @@ import Prelude.Compat
 
 import Control.Applicative       (Const)
 import Data.List.NonEmpty        (NonEmpty)
-import Data.Proxy                (Proxy)
+import Data.Proxy                (Proxy (..))
 import Data.Tagged               (Tagged)
 import Data.Text                 (Text)
 import Data.Time                 (Day, LocalTime, NominalDiffTime)
@@ -23,7 +23,8 @@ import Test.Tasty.QuickCheck
 
 import Data.Aeson.Compat
 
-import Orphans                   ()
+instance Arbitrary (Proxy a) where
+    arbitrary = pure Proxy
 
 main :: IO ()
 main = defaultMain $ testGroup "Tests"
