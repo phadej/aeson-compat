@@ -23,9 +23,6 @@ import Test.Tasty.QuickCheck
 
 import Data.Aeson.Compat
 
-instance Arbitrary (Proxy a) where
-    arbitrary = pure Proxy
-
 main :: IO ()
 main = defaultMain $ testGroup "Tests"
   [ dotColonMark
