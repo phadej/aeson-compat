@@ -1,5 +1,6 @@
 name:           aeson-compat
 version:        0.3.7
+x-revision:     1
 synopsis:       Compatibility layer for aeson
 description:    Compatibility layer for @aeson@
 category:       Web
@@ -14,9 +15,7 @@ cabal-version:  >= 1.10
 tested-with:
   GHC==7.6.3,
   GHC==7.8.4,
-  GHC==7.10.2,
   GHC==7.10.3,
-  GHC==8.0.1,
   GHC==8.0.2,
   GHC==8.2.1
 
@@ -45,7 +44,7 @@ library
     , nats                     >=1 && <1.2
     , scientific               >=0.3  && <0.4
     , text                     >=1.2  && <1.3
-    , time                     >=1.4.2 && <1.9
+    , time                     >=1.4.0.1 && <1.9
     , time-locale-compat       >=0.1.0.1 && <0.2
     , unordered-containers     >=0.2  && <0.3
     , vector                   >=0.10 && <0.13
