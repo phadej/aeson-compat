@@ -1,6 +1,0 @@
-flags: {}
-packages:
-- '.'
-extra-deps:
-- base-orphans-0.5.3
-resolver: lts-2.22
