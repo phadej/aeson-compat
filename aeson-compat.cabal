@@ -1,5 +1,6 @@
 name:           aeson-compat
 version:        0.3.7.1
+x-revision:     1
 synopsis:       Compatibility layer for aeson
 description:    Compatibility layer for @aeson@
 category:       Web
