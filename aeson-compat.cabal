@@ -1,6 +1,6 @@
 name:           aeson-compat
 version:        0.3.7.1
-x-revision:     3
+x-revision:     4
 synopsis:       Compatibility layer for aeson
 description:    Compatibility layer for @aeson@
 category:       Web
@@ -35,7 +35,7 @@ library
   build-depends:
       base                     >=4.6  && <4.12
     , base-compat              >=0.6.0 && <0.11
-    , aeson                    >=0.7.0.6 && <1.4
+    , aeson                    >=0.7.0.6 && <1.5
     , attoparsec               >=0.12 && <0.14
     , attoparsec-iso8601       >=1.0.0.0 && <1.1
     , bytestring               >=0.10 && <0.11
@@ -85,7 +85,7 @@ test-suite aeson-compat-test
     , tagged
     , aeson-compat
     , base-orphans          >=0.4.5 && <0.8
-    , tasty                 >=0.10 && <1.1
+    , tasty                 >=0.10 && <1.2
     , tasty-hunit           >=0.9  && <0.11
     , tasty-quickcheck      >=0.8  && <0.11
     , QuickCheck            >=2.10 && <2.12
