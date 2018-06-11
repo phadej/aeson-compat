@@ -74,6 +74,7 @@ module Data.Aeson.Compat (
     withNumber,
     withScientific,
     withBool,
+    withEmbeddedJSON,
     -- * Constructors and accessors
 #if MIN_VERSION_aeson(0,10,0)
     Series,
@@ -101,6 +102,9 @@ import           Data.Aeson hiding
 #if !MIN_VERSION_aeson (0,9,0)
   , eitherDecode, eitherDecode', eitherDecodeStrict, eitherDecodeStrict'
 #endif
+#if !MIN_VERSION_aeson (1,4,0)
+  , withNumber
+#endif
   )
 
 import           Data.Aeson.Parser (value, value')
@@ -112,12 +116,13 @@ import qualified Data.Attoparsec.Lazy as L
 #endif
 
 import           Control.Monad.Catch (MonadThrow (..), Exception)
-import           Data.Aeson.Types hiding ((.:?))
+import           Data.Aeson.Types (Parser, modifyFailure, typeMismatch, defaultOptions)
 import           Data.ByteString as B
 import qualified Data.Scientific as Scientific
 import           Data.ByteString.Lazy as L
 import qualified Data.HashMap.Strict as H
 import           Data.Text as T
+import qualified Data.Text.Encoding as TE
 import           Data.Typeable (Typeable)
 
 #if !MIN_VERSION_aeson(0,10,0)
@@ -145,6 +150,8 @@ import Data.Tagged         (Tagged (..))
 import qualified Data.List.NonEmpty as NonEmpty
 import qualified Data.Vector        as V
 #endif
+
+import Data.Attoparsec.Number (Number (..))
 
 -- | Exception thrown by 'decode' - family of functions in this module.
 newtype AesonException = AesonException String
@@ -421,4 +428,33 @@ instance (FromJSON a) => FromJSON (NonEmpty a) where
       where
         ne []     = fail "Expected a NonEmpty but got an empty list"
         ne (x:xs) = pure (x :| xs)
+#endif
+
+-------------------------------------------------------------------------------
+-- with*
+-------------------------------------------------------------------------------
+
+-- | @'withNumber' expected f value@ applies @f@ to the 'Number' when @value@
+-- is a 'Number' and fails using @'typeMismatch' expected@ otherwise.
+withNumber :: String -> (Number -> Parser a) -> Value -> Parser a
+withNumber expected f = withScientific expected (f . scientificToNumber)
+{-# INLINE withNumber #-}
+{-# DEPRECATED withNumber "Use withScientific instead" #-}
+
+scientificToNumber :: Scientific.Scientific -> Number
+scientificToNumber s
+    | e < 0 || e > 1024 = D $ Scientific.toRealFloat s
+    | otherwise         = I $ c * 10 ^ e
+  where
+    e = Scientific.base10Exponent s
+    c = Scientific.coefficient s
+{-# INLINE scientificToNumber #-}
+
+#if !MIN_VERSION_aeson(1,2,3)
+-- | Decode a nested JSON-encoded string.
+withEmbeddedJSON :: String -> (Value -> Parser a) -> Value -> Parser a
+withEmbeddedJSON _ innerParser (String txt) =
+    either fail innerParser $ eitherDecode (L.fromStrict $ TE.encodeUtf8 txt)
+withEmbeddedJSON name _ v = typeMismatch name v
+{-# INLINE withEmbeddedJSON #-}
 #endif

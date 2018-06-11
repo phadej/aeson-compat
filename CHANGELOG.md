@@ -1,3 +1,8 @@
+# 0.3.8
+
+- Re-implement `withNumber`
+- Add `withEmbeddedJSON`
+
 # 0.3.7
 
 - Use `attoparsec-iso8601` time parsers.
