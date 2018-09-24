@@ -1,3 +1,7 @@
+# 0.3.9
+
+- Add `ToJSON/FromJSON Void`
+
 # 0.3.8
 
 - Re-implement `withNumber`
