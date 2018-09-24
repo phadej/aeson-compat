@@ -151,6 +151,10 @@ import qualified Data.List.NonEmpty as NonEmpty
 import qualified Data.Vector        as V
 #endif
 
+#if !MIN_VERSION_aeson(1,4,1)
+import Data.Void (Void, absurd)
+#endif
+
 import Data.Attoparsec.Number (Number (..))
 
 -- | Exception thrown by 'decode' - family of functions in this module.
@@ -430,6 +434,20 @@ instance (FromJSON a) => FromJSON (NonEmpty a) where
         ne (x:xs) = pure (x :| xs)
 #endif
 
+#if !MIN_VERSION_aeson(1,4,1)
+instance ToJSON Void where
+    toJSON = absurd
+    {-# INLINE toJSON #-}
+
+#if MIN_VERSION_aeson(0,10,0)
+    toEncoding = absurd
+    {-# INLINE toEncoding #-}
+#endif
+
+instance FromJSON Void where
+    parseJSON _ = fail "Cannot parse Void"
+    {-# INLINE parseJSON #-}
+#endif
 -------------------------------------------------------------------------------
 -- with*
 -------------------------------------------------------------------------------

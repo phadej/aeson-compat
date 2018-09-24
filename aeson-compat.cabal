@@ -1,6 +1,5 @@
 name:           aeson-compat
-version:        0.3.8
-x-revision:     1
+version:        0.3.9
 synopsis:       Compatibility layer for aeson
 description:    Compatibility layer for @aeson@
 category:       Web
@@ -13,12 +12,13 @@ license-file:   LICENSE
 build-type:     Simple
 cabal-version:  >= 1.10
 tested-with:
-  GHC==7.6.3,
-  GHC==7.8.4,
-  GHC==7.10.3,
-  GHC==8.0.2,
-  GHC==8.2.2,
-  GHC==8.4.3
+  GHC ==7.6.3
+   || ==7.8.4
+   || ==7.10.3
+   || ==8.0.2
+   || ==8.2.2
+   || ==8.4.3
+   || ==8.6.1
 
 extra-source-files:
     CHANGELOG.md
@@ -33,13 +33,13 @@ library
       src
   ghc-options: -Wall
   build-depends:
-      base                     >=4.6  && <4.12
+      base                     >=4.6  && <4.13
     , base-compat              >=0.6.0 && <0.11
     , aeson                    >=0.7.0.6 && <1.5
     , attoparsec               >=0.12 && <0.14
     , attoparsec-iso8601       >=1.0.0.0 && <1.1
     , bytestring               >=0.10 && <0.11
-    , containers               >=0.5  && <0.6
+    , containers               >=0.5  && <0.7
     , exceptions               >=0.8  && <0.11
     , hashable                 >=1.2  && <1.3
     , scientific               >=0.3  && <0.4
@@ -52,10 +52,11 @@ library
 
   if !impl(ghc >= 8.0)
     build-depends:
-      semigroups               >=0.16.2.2  && <0.19
+      semigroups               >=0.18.5 && <0.19
   if !impl(ghc >= 7.10)
     build-depends:
-      nats                     >=1         && <1.2
+      nats                     >=1.1.2  && <1.2,
+      void                     >=0.7.2  && <0.8
 
   exposed-modules:
       Data.Aeson.Compat
@@ -88,7 +89,7 @@ test-suite aeson-compat-test
     , tasty                 >=0.10 && <1.2
     , tasty-hunit           >=0.9  && <0.11
     , tasty-quickcheck      >=0.8  && <0.11
-    , QuickCheck            >=2.10 && <2.12
+    , QuickCheck            >=2.10 && <2.13
     , quickcheck-instances  >=0.3.16  && <0.4
 
   if !impl(ghc >= 8.0)
@@ -96,5 +97,5 @@ test-suite aeson-compat-test
       semigroups
   if !impl(ghc >= 7.10)
     build-depends:
-      nats
+      nats, void
   default-language: Haskell2010
