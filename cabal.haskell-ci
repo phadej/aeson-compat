@@ -1,3 +1,5 @@
+branches: master
+
 constraint-set aeson-0.7
   ghc: >=7.6 && <7.10
   constraints: aeson ^>=0.7.0.6
