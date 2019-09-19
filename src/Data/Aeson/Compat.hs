@@ -117,10 +117,10 @@ import qualified Data.Attoparsec.Lazy as L
 
 import           Control.Monad.Catch (MonadThrow (..), Exception)
 import           Data.Aeson.Types (Parser, modifyFailure, typeMismatch, defaultOptions)
-import           Data.ByteString as B
+import           Data.ByteString as BS
 import qualified Data.Scientific as Scientific
-import           Data.ByteString.Lazy as L
-import qualified Data.HashMap.Strict as H
+import           Data.ByteString.Lazy as LBS
+import qualified Data.HashMap.Strict as HM
 import           Data.Text as T
 import qualified Data.Text.Encoding as TE
 import           Data.Typeable (Typeable)
@@ -147,7 +147,7 @@ import Data.List.NonEmpty  (NonEmpty (..))
 import Data.Proxy          (Proxy (..))
 import Data.Tagged         (Tagged (..))
 
-import qualified Data.List.NonEmpty as NonEmpty
+import qualified Data.List.NonEmpty as NE
 import qualified Data.Vector        as V
 #endif
 
@@ -170,19 +170,19 @@ eitherAesonExc (Right x)  = return x
 -- | Like original 'Data.Aeson.decode' but in arbitrary 'MonadThrow'.
 --
 -- Parse a top-level JSON value, i.e. also strings, numbers etc.
-decode :: (FromJSON a, MonadThrow m) => L.ByteString -> m a
+decode :: (FromJSON a, MonadThrow m) => LBS.ByteString -> m a
 decode = eitherAesonExc . eitherDecode
 
 -- | Like original 'Data.Aeson.decode'' but in arbitrary 'MonadThrow'.
-decode' :: (FromJSON a, MonadThrow m) => L.ByteString -> m a
+decode' :: (FromJSON a, MonadThrow m) => LBS.ByteString -> m a
 decode' = eitherAesonExc . eitherDecode'
 
 -- | Like original 'Data.Aeson.decodeStrict' but in arbitrary 'MonadThrow'.
-decodeStrict :: (FromJSON a, MonadThrow m) => B.ByteString -> m a
+decodeStrict :: (FromJSON a, MonadThrow m) => BS.ByteString -> m a
 decodeStrict = eitherAesonExc . eitherDecodeStrict
 
 -- | Like original 'Data.Aeson.decodeStrict'' but in arbitrary 'MonadThrow'.
-decodeStrict' :: (FromJSON a, MonadThrow m) => B.ByteString -> m a
+decodeStrict' :: (FromJSON a, MonadThrow m) => BS.ByteString -> m a
 decodeStrict' = eitherAesonExc . eitherDecodeStrict'
 
 -- | Retrieve the value associated with the given key of an 'Object'.
@@ -195,7 +195,7 @@ decodeStrict' = eitherAesonExc . eitherDecodeStrict'
 --
 -- This operator is consistent in @aeson >=0.7 && <0.11@
 (.:?) :: (FromJSON a) => Object -> Text -> Parser (Maybe a)
-obj .:? key = case H.lookup key obj of
+obj .:? key = case HM.lookup key obj of
                 Nothing -> pure Nothing
                 Just v  ->
 #if MIN_VERSION_aeson(0,10,0)
@@ -211,7 +211,7 @@ obj .:? key = case H.lookup key obj of
 -- | Like '.:?', but the resulting parser will fail,
 -- if the key is present but is 'Null'.
 (.:!) :: (FromJSON a) => Object -> Text -> Parser (Maybe a)
-obj .:! key = case H.lookup key obj of
+obj .:! key = case HM.lookup key obj of
                 Nothing -> pure Nothing
                 Just v  ->
 #if MIN_VERSION_aeson(0,10,0)
@@ -238,26 +238,26 @@ jsonEOF' :: A.Parser Value
 jsonEOF' = value' <* A.skipSpace <* A.endOfInput
 
 -- | Like 'decode' but returns an error message when decoding fails.
-eitherDecode :: (FromJSON a) => L.ByteString -> Either String a
+eitherDecode :: (FromJSON a) => LBS.ByteString -> Either String a
 eitherDecode = eitherDecodeWith jsonEOF fromJSON
 {-# INLINE eitherDecode #-}
 
 -- | Like 'decodeStrict' but returns an error message when decoding fails.
-eitherDecodeStrict :: (FromJSON a) => B.ByteString -> Either String a
+eitherDecodeStrict :: (FromJSON a) => BS.ByteString -> Either String a
 eitherDecodeStrict = eitherDecodeStrictWith jsonEOF fromJSON
 {-# INLINE eitherDecodeStrict #-}
 
 -- | Like 'decode'' but returns an error message when decoding fails.
-eitherDecode' :: (FromJSON a) => L.ByteString -> Either String a
+eitherDecode' :: (FromJSON a) => LBS.ByteString -> Either String a
 eitherDecode' = eitherDecodeWith jsonEOF' fromJSON
 {-# INLINE eitherDecode' #-}
 
 -- | Like 'decodeStrict'' but returns an error message when decoding fails.
-eitherDecodeStrict' :: (FromJSON a) => B.ByteString -> Either String a
+eitherDecodeStrict' :: (FromJSON a) => BS.ByteString -> Either String a
 eitherDecodeStrict' = eitherDecodeStrictWith jsonEOF' fromJSON
 {-# INLINE eitherDecodeStrict' #-}
 
-eitherDecodeWith :: L.Parser Value -> (Value -> Result a) -> L.ByteString
+eitherDecodeWith :: L.Parser Value -> (Value -> Result a) -> LBS.ByteString
                  -> Either String a
 eitherDecodeWith p to s =
     case L.parse p s of
@@ -267,7 +267,7 @@ eitherDecodeWith p to s =
       L.Fail _ _ msg -> Left msg
 {-# INLINE eitherDecodeWith #-}
 
-eitherDecodeStrictWith :: A.Parser Value -> (Value -> Result a) -> B.ByteString
+eitherDecodeStrictWith :: A.Parser Value -> (Value -> Result a) -> BS.ByteString
                        -> Either String a
 eitherDecodeStrictWith p to s =
     case either Error to (A.parseOnly p s) of
@@ -356,7 +356,7 @@ instance FromJSON Version where
       where
         go [(v,[])] = return v
         go (_ : xs) = go xs
-        go _        = fail $ "could not parse Version"
+        go _        = fail "could not parse Version"
 
 instance ToJSON Ordering where
   toJSON     = toJSON     . orderingToText
@@ -418,11 +418,11 @@ instance FromJSON a => FromJSON (Const a b) where
     parseJSON = fmap Const . parseJSON
 
 instance (ToJSON a) => ToJSON (NonEmpty a) where
-    toJSON = toJSON . NonEmpty.toList
+    toJSON = toJSON . NE.toList
     {-# INLINE toJSON #-}
 
 #if MIN_VERSION_aeson(0,10,0)
-    toEncoding = toEncoding . NonEmpty.toList
+    toEncoding = toEncoding . NE.toList
     {-# INLINE toEncoding #-}
 #endif
 
@@ -472,7 +472,7 @@ scientificToNumber s
 -- | Decode a nested JSON-encoded string.
 withEmbeddedJSON :: String -> (Value -> Parser a) -> Value -> Parser a
 withEmbeddedJSON _ innerParser (String txt) =
-    either fail innerParser $ eitherDecode (L.fromStrict $ TE.encodeUtf8 txt)
+    either fail innerParser $ eitherDecode (LBS.fromStrict $ TE.encodeUtf8 txt)
 withEmbeddedJSON name _ v = typeMismatch name v
 {-# INLINE withEmbeddedJSON #-}
 #endif
