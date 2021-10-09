@@ -23,6 +23,10 @@ import Test.Tasty.QuickCheck
 
 import Data.Aeson.Compat
 
+#if MIN_VERSION_aeson(2,0,0)
+import Data.Aeson (Key)
+#endif
+
 main :: IO ()
 main = defaultMain $ testGroup "Tests"
   [ dotColonMark
@@ -87,5 +91,9 @@ roundtripBroken10 = roundtrip
 -- tests that symbols are exported
 -------------------------------------------------------------------------------
 
+#if MIN_VERSION_aeson(2,0,0)
+ex :: (Key, Value)
+#else
 ex :: (Text, Value)
+#endif
 ex = "foo" .= True

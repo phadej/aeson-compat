@@ -98,7 +98,10 @@ import Prelude ()
 import Prelude.Compat
 
 import           Data.Aeson hiding
-  ((.:?), decode, decode', decodeStrict, decodeStrict'
+  ((.:?), (.:), decode, decode', decodeStrict, decodeStrict'
+#if MIN_VERSION_aeson (0,11,0)
+  , (.:!)
+#endif
 #if !MIN_VERSION_aeson (0,9,0)
   , eitherDecode, eitherDecode', eitherDecodeStrict, eitherDecodeStrict'
 #endif
@@ -106,6 +109,8 @@ import           Data.Aeson hiding
   , withNumber
 #endif
   )
+
+import qualified Data.Aeson as Aeson
 
 import           Data.Aeson.Parser (value, value')
 
@@ -155,6 +160,11 @@ import qualified Data.Vector        as V
 import Data.Void (Void, absurd)
 #endif
 
+#if MIN_VERSION_aeson(2,0,0)
+import qualified Data.Aeson.Key as Key
+import qualified Data.Aeson.KeyMap as KM
+#endif
+
 import Data.Attoparsec.Number (Number (..))
 
 -- | Exception thrown by 'decode' - family of functions in this module.
@@ -185,6 +195,13 @@ decodeStrict = eitherAesonExc . eitherDecodeStrict
 decodeStrict' :: (FromJSON a, MonadThrow m) => BS.ByteString -> m a
 decodeStrict' = eitherAesonExc . eitherDecodeStrict'
 
+(.:) :: (FromJSON a) => Object -> Text -> Parser a
+#if MIN_VERSION_aeson(2,0,0)
+obj .: key = obj Aeson..: Key.fromText key
+#else
+obj .: key = obj Aeson..: key
+#endif
+
 -- | Retrieve the value associated with the given key of an 'Object'.
 -- The result is 'Nothing' if the key is not present, or 'empty' if
 -- the value cannot be converted to the desired type.
@@ -195,7 +212,12 @@ decodeStrict' = eitherAesonExc . eitherDecodeStrict'
 --
 -- This operator is consistent in @aeson >=0.7 && <0.11@
 (.:?) :: (FromJSON a) => Object -> Text -> Parser (Maybe a)
-obj .:? key = case HM.lookup key obj of
+obj .:? key =
+#if MIN_VERSION_aeson(2,0,0)
+  case KM.lookup (Key.fromText key) obj of
+#else
+  case HM.lookup key obj of
+#endif
                 Nothing -> pure Nothing
                 Just v  ->
 #if MIN_VERSION_aeson(0,10,0)
@@ -207,11 +229,21 @@ obj .:? key = case HM.lookup key obj of
 #endif
 {-# INLINE (.:?) #-}
 
-#if !MIN_VERSION_aeson(0,11,0)
 -- | Like '.:?', but the resulting parser will fail,
 -- if the key is present but is 'Null'.
 (.:!) :: (FromJSON a) => Object -> Text -> Parser (Maybe a)
-obj .:! key = case HM.lookup key obj of
+#if MIN_VERSION_aeson(2,0,0)
+obj .:! key = obj Aeson..:! Key.fromText key
+#else
+#if MIN_VERSION_aeson(0,11,0)
+(.:!) = (Aeson..:!)
+#else
+obj .:! key =
+#if MIN_VERSION_aeson(2,0,0)
+  case KM.lookup (Key.fromText key) obj of
+#else
+  case HM.lookup key obj of
+#endif
                 Nothing -> pure Nothing
                 Just v  ->
 #if MIN_VERSION_aeson(0,10,0)
@@ -222,6 +254,7 @@ obj .:! key = case HM.lookup key obj of
                   Just <$> parseJSON v
 #endif
 {-# INLINE (.:!) #-}
+#endif
 #endif
 
 #if !MIN_VERSION_aeson(0,9,0)
