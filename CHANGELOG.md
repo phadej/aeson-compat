@@ -1,3 +1,7 @@
+# 0.3.10
+
+- Support `aeson-2.0.0.0`
+
 # 0.3.9
 
 - Add `ToJSON/FromJSON Void`
