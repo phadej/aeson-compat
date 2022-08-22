@@ -41,5 +41,9 @@ constraint-set aeson-1.4
   constraints: aeson ^>=1.4
 
 constraint-set aeson-2.0.0.0
-  ghc: >=8
+  ghc: >=8 && <9.4
   constraints: aeson ==2.0.*
+
+constraint-set aeson-2.1.0.0
+  ghc: >=8
+  constraints: aeson ==2.1.*
