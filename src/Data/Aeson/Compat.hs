@@ -167,11 +167,13 @@ import qualified Data.Aeson.KeyMap as KM
 
 import Data.Attoparsec.Number (Number (..))
 
+#if !MIN_VERSION_aeson(2,1,2)
 -- | Exception thrown by 'decode' - family of functions in this module.
 newtype AesonException = AesonException String
   deriving (Show, Typeable)
 
 instance Exception AesonException
+#endif
 
 eitherAesonExc :: (MonadThrow m) => Either String a -> m a
 eitherAesonExc (Left err) = throwM (AesonException err)
